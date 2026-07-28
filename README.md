@@ -4,6 +4,19 @@ Connect Claude (Cowork / Claude Code / any MCP client) to **Google Search Consol
 
 This plugin does not reinvent MCP servers. It orchestrates two existing, maintained ones — [google-analytics-mcp](https://github.com/googleanalytics/google-analytics-mcp) (official, Google) and [mcp-search-console](https://github.com/AminForou/mcp-gsc) (AminForou, MIT) — and adds the operational knowledge that makes them work smoothly across many sites: guided credential setup, audit workflows, sitemap health checks, and IndexNow submission with real end-to-end verification.
 
+## Who is this for
+
+Your AI already reads your code — this makes it read your search reality.
+
+This kit is for developers who own the *outcome* of a website, not just its code: indie hackers, freelancers running client sites, small agencies, anyone whose deploy is only half the job. If SEO is "the marketing team's problem" in your org, this probably isn't for you — and if you have an enterprise SEO stack (Ahrefs, Semrush, a data team), you already have better-resourced answers.
+
+What it changes in practice:
+
+- **Integration cost collapses.** Wiring Search Console + GA4 into an AI agent normally means reading two repos, fighting Google Cloud auth, and debugging WAFs, CDN caches and stale environments. That knowledge is distilled here — setup is ~15 minutes, guided.
+- **The deploy → impact loop closes where you work.** Real case from this kit's development: a production site's sitemap had been frozen for six months — Google knew 5 of its 34 URLs and no human had noticed. One audit query found it and fixed it in the same conversation.
+- **Your AI stops guessing.** "How's my SEO?" without data yields generic advice. With live GSC/GA4 access, answers cite your actual queries, CTR, positions and index coverage.
+- **N sites, zero marginal config.** One service account, two clicks per new site. Audits become a billable deliverable built on Google's free APIs.
+
 ## What you get
 
 | Skill | What it does |
@@ -55,6 +68,19 @@ MIT — see [LICENSE](LICENSE).
 Conectá Claude (Cowork / Claude Code / cualquier cliente MCP) con **Google Search Console**, **Google Analytics 4** e **IndexNow** — para cualquier sitio web, con una única configuración reutilizable.
 
 Este plugin no reinventa servidores MCP: orquesta dos existentes y mantenidos — [google-analytics-mcp](https://github.com/googleanalytics/google-analytics-mcp) (oficial de Google) y [mcp-search-console](https://github.com/AminForou/mcp-gsc) (AminForou, MIT) — y suma el conocimiento operativo que hace que funcionen bien en muchos sitios: setup guiado de credenciales, workflows de auditoría, control de salud de sitemaps, y envío a IndexNow con verificación real de punta a punta.
+
+## Para quién es
+
+Tu IA ya lee tu código — esto le hace leer tu realidad de búsqueda.
+
+Este kit es para developers dueños del *resultado* de un sitio, no solo de su código: indie hackers, freelancers con sitios de clientes, agencias chicas, cualquiera para quien el deploy es la mitad del trabajo. Si en tu organización el SEO es "problema de marketing", probablemente no es para vos — y si tenés stack SEO enterprise (Ahrefs, Semrush, equipo de datos), ya tenés respuestas con más recursos.
+
+Qué cambia en la práctica:
+
+- **El costo de integración colapsa.** Conectar Search Console + GA4 a un agente de IA normalmente implica leer dos repos, pelear con la autenticación de Google Cloud y debuggear WAFs, caches de CDN y entornos congelados. Ese conocimiento está destilado acá — el setup toma ~15 minutos, guiado.
+- **El loop deploy → impacto se cierra donde trabajás.** Caso real del desarrollo de este kit: el sitemap de un sitio en producción llevaba seis meses congelado — Google conocía 5 de sus 34 URLs y ningún humano lo había notado. Una consulta de auditoría lo detectó y lo corrigió en la misma conversación.
+- **Tu IA deja de adivinar.** "¿Cómo está mi SEO?" sin datos produce consejos genéricos. Con acceso vivo a GSC/GA4, las respuestas citan tus queries, CTR, posiciones y cobertura de indexación reales.
+- **N sitios, configuración marginal cero.** Una service account, dos clicks por sitio nuevo. Las auditorías se vuelven un entregable facturable sobre las APIs gratuitas de Google.
 
 ## Qué incluye
 
