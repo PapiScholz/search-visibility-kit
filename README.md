@@ -30,7 +30,7 @@ From the Claude Code / Cowork plugin marketplace flow:
   - `GOOGLE_SA_KEY_PATH` — absolute path to your service account JSON key
   - `GOOGLE_CLOUD_PROJECT_ID` — your Google Cloud project ID
 
-No key? Run the `setup-google-access` skill and Claude walks you through creating one (~10 minutes, free).
+No key? Two paths: run the `setup-google-access` skill and Claude walks you through creating one interactively (~10 minutes, free), or follow the manual step-by-step in [SETUP.md](SETUP.md) — which also covers non-Claude MCP clients (Cursor, etc.) and Bing Webmaster Tools registration.
 
 > **Note:** both MCP servers are currently pinned with `--with "mcp<2"` because the July 2026 release of the `mcp` Python SDK introduced breaking changes (removed `mcp.server.fastmcp`, renamed `Tool.inputSchema`) that crash both upstream servers. Remove the pin once upstream publishes compatible releases.
 
@@ -78,7 +78,7 @@ Este plugin no reinventa servidores MCP: orquesta dos existentes y mantenidos �
 - Node 18+ (solo para el script de IndexNow)
 - Dos variables de entorno: `GOOGLE_SA_KEY_PATH` (ruta absoluta al JSON de la service account) y `GOOGLE_CLOUD_PROJECT_ID` (ID del proyecto de Google Cloud)
 
-¿No tenés clave? Ejecutá la skill `setup-google-access` y Claude te guía para crearla (~10 minutos, gratis).
+¿No tenés clave? Dos caminos: ejecutá la skill `setup-google-access` y Claude te guía de forma interactiva (~10 minutos, gratis), o seguí el paso a paso manual de [SETUP.md](SETUP.md) — que además cubre clientes MCP sin Claude (Cursor, etc.) y el alta en Bing Webmaster Tools.
 
 ## Reutilización entre sitios
 
