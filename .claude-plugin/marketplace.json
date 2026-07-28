@@ -1,0 +1,14 @@
+{
+  "name": "papischolz",
+  "owner": {
+    "name": "Ezequiel Scholz",
+    "url": "https://github.com/PapiScholz"
+  },
+  "plugins": [
+    {
+      "name": "search-visibility-kit",
+      "source": "./",
+      "description": "Google Search Console + GA4 + IndexNow for any website: guided setup, SEO audits, indexing workflows."
+    }
+  ]
+}
