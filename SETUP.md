@@ -51,6 +51,8 @@ export GOOGLE_CLOUD_PROJECT_ID="your-project-id"
 
 Requirement: [uv](https://docs.astral.sh/uv/) installed — `uvx` runs both servers, no Python management needed.
 
+> **Windows gotcha — stale environments:** `setx` writes to the registry but never updates running processes. Terminals inside editors (VS Code, JetBrains) inherit the *editor's* environment — opening a "new" terminal there is not enough; the editor itself must be fully closed and reopened (or reboot). To verify before launching your MCP client, run `echo $env:GOOGLE_SA_KEY_PATH` in the same shell you will launch it from. Quick unblock without restarting anything: set the variables inline in the current shell (`$env:GOOGLE_SA_KEY_PATH = "C:\path\to\key.json"`) and launch the client from there.
+
 ## 4. Non-plugin clients (Cursor, plain MCP config)
 
 If your client does not support Claude plugins, declare the servers directly (same shape as this repo's `.mcp.json`):
@@ -116,6 +118,8 @@ Recorrido completo para conectar cualquier cliente MCP (Claude Code, Claude Desk
 ## 3. Variables de entorno
 
 `GOOGLE_SA_KEY_PATH` (ruta absoluta al JSON) y `GOOGLE_CLOUD_PROJECT_ID` (ID del proyecto). En Windows: `setx` como en la sección en inglés y reiniciá el cliente por completo. En macOS/Linux: `export` en tu perfil de shell. Requisito: [uv](https://docs.astral.sh/uv/) instalado.
+
+> **Trampa de Windows — entornos congelados:** `setx` escribe al registro pero nunca actualiza procesos vivos. Las terminales dentro de editores (VS Code, JetBrains) heredan el entorno *del editor* — abrir una terminal "nueva" ahí no alcanza; hay que cerrar el editor completo y reabrirlo (o reiniciar Windows). Verificá con `echo $env:GOOGLE_SA_KEY_PATH` en la misma shell desde la que vas a lanzar el cliente. Desbloqueo rápido sin cerrar nada: seteá las variables inline en la shell actual (`$env:GOOGLE_SA_KEY_PATH = "C:\ruta\a\key.json"`) y lanzá el cliente desde ahí.
 
 ## 4. Clientes sin soporte de plugins
 
