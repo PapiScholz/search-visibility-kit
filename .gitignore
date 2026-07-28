@@ -1,2 +1,5 @@
 # graphify knowledge-graph artifacts
 graphify-out/
+
+# Claude Code local session state
+.claude/

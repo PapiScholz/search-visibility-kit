@@ -1,6 +1,6 @@
 ---
 name: onboard-site
-description: Checklist-driven onboarding of a new website into the full search-visibility stack (Search Console, GA4, IndexNow, Bing Webmaster Tools). Use when the user says "add a new site", "onboard <domain>", "set up this website", or wants to repeat the setup for another project or client site.
+description: Checklist-driven onboarding of a new website into the full search-visibility stack (Search Console, GA4, IndexNow, Bing Webmaster Tools). Use when the user says "add a new site", "onboard example.com", "set up this website", or wants to repeat the setup for another project or client site.
 ---
 
 # Onboard a new site
