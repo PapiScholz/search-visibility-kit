@@ -7,12 +7,16 @@
  *   node indexnow.mjs generar-clave
  *   node indexnow.mjs --host midominio.com --key MICLAVE https://midominio.com/pagina1 [mas URLs...]
  *   node indexnow.mjs --host midominio.com --key MICLAVE --sitemap https://midominio.com/sitemap.xml
+ *   node indexnow.mjs --host midominio.com --key MICLAVE --sitemap https://midominio.com/sitemap.xml --state .indexnow-sent.json
+ *
+ * --state <archivo>: persiste las URLs ya enviadas y en cada corrida envia solo las nuevas (delta).
  *
  * La clave tambien puede pasarse via variable de entorno INDEXNOW_KEY.
  * Requisito previo: https://midominio.com/MICLAVE.txt debe existir y contener la clave.
  */
 
 import crypto from "node:crypto";
+import { readFile, writeFile } from "node:fs/promises";
 
 const ENDPOINT = "https://api.indexnow.org/indexnow";
 const UA_HEADERS = { "User-Agent": "Mozilla/5.0 (compatible; IndexNowClient/1.0; +https://www.indexnow.org/)" };
@@ -25,6 +29,7 @@ function parseArgs(argv) {
     else if (a === "--host") args.host = argv[++i];
     else if (a === "--key") args.key = argv[++i];
     else if (a === "--sitemap") args.sitemap = argv[++i];
+    else if (a === "--state") args.state = argv[++i];
     else if (a.startsWith("http")) args.urls.push(a);
     else {
       console.error(`Argumento no reconocido: ${a}`);
@@ -85,6 +90,24 @@ async function main() {
     process.exit(1);
   }
 
+  let sentBefore = [];
+  if (args.state) {
+    try {
+      sentBefore = JSON.parse(await readFile(args.state, "utf8"));
+      if (!Array.isArray(sentBefore)) sentBefore = [];
+    } catch {
+      sentBefore = [];
+    }
+    const known = new Set(sentBefore);
+    const total = urls.length;
+    urls = urls.filter((u) => !known.has(u));
+    console.log(`Delta: ${urls.length} URLs nuevas de ${total} (${total - urls.length} ya enviadas antes).`);
+    if (urls.length === 0) {
+      console.log("Nada nuevo para enviar.");
+      return;
+    }
+  }
+
   // Verificar que el archivo de clave este publicado
   const keyFileUrl = `https://${args.host}/${key}.txt`;
   const check = await fetch(keyFileUrl, { headers: UA_HEADERS }).catch(() => null);
@@ -105,6 +128,10 @@ async function main() {
       console.error(`Error HTTP ${res.status}: ${text || res.statusText}`);
       process.exit(1);
     }
+  }
+  if (args.state) {
+    await writeFile(args.state, JSON.stringify([...new Set([...sentBefore, ...urls])], null, 2) + "\n");
+    console.log(`Estado actualizado en ${args.state}.`);
   }
   console.log(`Listo: ${urls.length} URLs notificadas a IndexNow para ${args.host}.`);
 }

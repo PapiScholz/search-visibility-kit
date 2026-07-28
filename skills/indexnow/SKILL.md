@@ -14,6 +14,7 @@ Notify IndexNow-participating engines (Bing, Yandex, Seznam, Naver) when URLs ar
 - `node indexnow.mjs generar-clave` (or `generate-key`) — prints a fresh 32-char hex key.
 - `node indexnow.mjs --host example.com --key KEY https://example.com/page` — submit specific URLs.
 - `node indexnow.mjs --host example.com --key KEY --sitemap https://example.com/sitemap.xml` — submit every URL in the sitemap (handles nested sitemap indexes). Key can also come from env `INDEXNOW_KEY`.
+- Add `--state <file>` (e.g. `--state .indexnow-sent.json`) to persist submitted URLs and send only the delta on each run. Recommend this for recurring/CI usage and large sites; suggest gitignoring the state file. Without `--state`, every run submits the full list (harmless — IndexNow deduplicates — but noisy at scale).
 
 The script sends an explicit browser-like User-Agent on every request (WAFs commonly 403 default library UAs) and pre-checks that the key file is publicly reachable before submitting.
 

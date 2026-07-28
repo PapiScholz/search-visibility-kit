@@ -1,6 +1,6 @@
 {
   "name": "search-visibility-kit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Connect Claude to Google Search Console, Google Analytics 4 and IndexNow for any website. Guided credential setup, data-driven SEO audits, sitemap health checks, and IndexNow submission with real verification.",
   "author": {
     "name": "Ezequiel Scholz",
@@ -9,5 +9,15 @@
   "homepage": "https://github.com/PapiScholz/search-visibility-kit",
   "repository": "https://github.com/PapiScholz/search-visibility-kit",
   "license": "MIT",
-  "keywords": ["seo", "google-search-console", "google-analytics", "ga4", "indexnow", "sitemap", "mcp", "aeo", "geo"]
+  "keywords": [
+    "seo",
+    "google-search-console",
+    "google-analytics",
+    "ga4",
+    "indexnow",
+    "sitemap",
+    "mcp",
+    "aeo",
+    "geo"
+  ]
 }
