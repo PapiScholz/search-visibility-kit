@@ -2,7 +2,11 @@
   "mcpServers": {
     "gsc": {
       "command": "uvx",
-      "args": ["mcp-search-console"],
+      "args": [
+        "--with",
+        "mcp<2",
+        "mcp-search-console"
+      ],
       "env": {
         "GSC_CREDENTIALS_PATH": "${GOOGLE_SA_KEY_PATH}",
         "GSC_SKIP_OAUTH": "true"
@@ -10,7 +14,11 @@
     },
     "analytics": {
       "command": "uvx",
-      "args": ["analytics-mcp"],
+      "args": [
+        "--with",
+        "mcp<2",
+        "analytics-mcp"
+      ],
       "env": {
         "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_SA_KEY_PATH}",
         "GOOGLE_PROJECT_ID": "${GOOGLE_CLOUD_PROJECT_ID}"

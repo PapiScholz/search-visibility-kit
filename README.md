@@ -32,6 +32,8 @@ From the Claude Code / Cowork plugin marketplace flow:
 
 No key? Run the `setup-google-access` skill and Claude walks you through creating one (~10 minutes, free).
 
+> **Note:** both MCP servers are currently pinned with `--with "mcp<2"` because the July 2026 release of the `mcp` Python SDK introduced breaking changes (removed `mcp.server.fastmcp`, renamed `Tool.inputSchema`) that crash both upstream servers. Remove the pin once upstream publishes compatible releases.
+
 ## Reusing across websites
 
 The core design decision: one service account, added as a user to each site's Search Console property and GA4 property. Adding site #2 (or #20) requires two clicks in Google's UIs and zero configuration changes here. Run `onboard-site` per site.
