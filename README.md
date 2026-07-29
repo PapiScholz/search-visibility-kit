@@ -17,6 +17,24 @@ What it changes in practice:
 - **Your AI stops guessing.** "How's my SEO?" without data yields generic advice. With live GSC/GA4 access, answers cite your actual queries, CTR, positions and index coverage.
 - **N sites, zero marginal config.** One service account, two clicks per new site. Audits become a billable deliverable built on Google's free APIs.
 
+## Use cases
+
+Everything below is a real prompt you can type once the kit is connected — no commands to memorize.
+
+| You say | What happens |
+|---|---|
+| *"Run an SEO audit of mysite.com"* | Pulls 28 days of real Search Console + GA4 data: branded vs non-branded queries, CTR opportunities on high-impression pages, index coverage of your top pages, channel mix — and checks whether Google's copy of your sitemap is stale (this caught a production sitemap frozen for six months). |
+| *"Why did my search traffic drop this month?"* | Compares two periods query-by-query and page-by-page, and separates ranking losses from CTR losses from indexing problems. |
+| *"Which queries almost rank? Where's my easiest growth?"* | Surfaces position 5–20 queries with impressions but few clicks — the pages where a title rewrite or content update pays fastest. |
+| *"Is this new page indexed yet?"* | Inspects the URL: crawl date, index status, rich results detected. Batch-checks up to 10 URLs at once. |
+| *"Submit my sitemap to Google"* | Submits or resubmits it through Search Console and reports the processing status. |
+| *"Notify search engines about my new URLs"* | Runs the bundled IndexNow script (Bing, Yandex, Seznam, Naver) with delta tracking — only URLs not already submitted — and verifies the key file is actually reachable first. |
+| *"How many people are on my site right now?"* | GA4 realtime report: active users in the last 30 minutes. |
+| *"Set up Google access"* | Interactive wizard: Google Cloud project, service account, per-site permissions, environment variables, verification. Once, ~10 minutes. |
+| *"Onboard clientsite.com"* | Full checklist for a new site: Search Console access, GA4 access, sitemap submission, IndexNow key, Bing Webmaster Tools import, baseline audit. Two clicks of Google UI per site, zero plugin reconfiguration. |
+
+Who runs these in practice: freelancers reporting to clients with data instead of vibes, indie hackers checking their launch actually got indexed, agencies onboarding site #12 in the time site #1 took, and anyone who suspects — correctly — that nobody has opened their Search Console in months.
+
 ## What you get
 
 | Skill | What it does |
@@ -81,6 +99,24 @@ Qué cambia en la práctica:
 - **El loop deploy → impacto se cierra donde trabajás.** Caso real del desarrollo de este kit: el sitemap de un sitio en producción llevaba seis meses congelado — Google conocía 5 de sus 34 URLs y ningún humano lo había notado. Una consulta de auditoría lo detectó y lo corrigió en la misma conversación.
 - **Tu IA deja de adivinar.** "¿Cómo está mi SEO?" sin datos produce consejos genéricos. Con acceso vivo a GSC/GA4, las respuestas citan tus queries, CTR, posiciones y cobertura de indexación reales.
 - **N sitios, configuración marginal cero.** Una service account, dos clicks por sitio nuevo. Las auditorías se vuelven un entregable facturable sobre las APIs gratuitas de Google.
+
+## Casos de uso
+
+Todo lo de abajo es un prompt real que podés escribir una vez conectado el kit — sin comandos que memorizar.
+
+| Vos decís | Qué pasa |
+|---|---|
+| *"Hacé una auditoría SEO de misitio.com"* | Trae 28 días de datos reales de Search Console + GA4: queries de marca vs no-marca, oportunidades de CTR en páginas con impresiones, cobertura de indexación, mix de canales — y chequea si la copia de Google de tu sitemap está vieja (esto detectó un sitemap congelado seis meses en producción). |
+| *"¿Por qué cayó mi tráfico de búsqueda este mes?"* | Compara dos períodos query por query y página por página, y separa pérdidas de ranking, de CTR y de indexación. |
+| *"¿Qué queries casi rankean? ¿Dónde está mi crecimiento más fácil?"* | Muestra queries en posición 5–20 con impresiones y pocos clics — las páginas donde un título nuevo o una actualización de contenido paga más rápido. |
+| *"¿Esta página nueva ya está indexada?"* | Inspecciona la URL: fecha de crawl, estado de índice, rich results. Hasta 10 URLs por lote. |
+| *"Enviá mi sitemap a Google"* | Lo envía o reenvía por Search Console y reporta el estado de procesamiento. |
+| *"Avisale a los buscadores de mis URLs nuevas"* | Corre el script de IndexNow incluido (Bing, Yandex, Seznam, Naver) con tracking de deltas — solo URLs no enviadas antes — verificando primero que el archivo de clave sea accesible. |
+| *"¿Cuánta gente hay en mi sitio ahora mismo?"* | Reporte realtime de GA4: usuarios activos en los últimos 30 minutos. |
+| *"Configurame el acceso a Google"* | Asistente interactivo: proyecto de Google Cloud, service account, permisos por sitio, variables de entorno, verificación. Una vez, ~10 minutos. |
+| *"Sumá el sitio cliente.com"* | Checklist completo para un sitio nuevo: acceso a Search Console y GA4, sitemap, clave de IndexNow, importación a Bing Webmaster Tools, auditoría base. Dos clicks de UI de Google por sitio, cero reconfiguración del plugin. |
+
+Quién usa esto en la práctica: freelancers que reportan a clientes con datos en vez de sensaciones, indie hackers verificando que su lanzamiento se indexó, agencias sumando el sitio n.° 12 en el tiempo que llevó el n.° 1, y cualquiera que sospeche — con razón — que nadie abre su Search Console hace meses.
 
 ## Qué incluye
 
