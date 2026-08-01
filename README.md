@@ -1,5 +1,7 @@
 # search-visibility-kit
 
+[![skills.sh](https://skills.sh/b/PapiScholz/search-visibility-kit)](https://skills.sh/PapiScholz/search-visibility-kit)
+
 Connect Claude (Cowork / Claude Code / any MCP client) to **Google Search Console**, **Google Analytics 4** and **IndexNow** — for any website, with one reusable setup.
 
 This plugin does not reinvent MCP servers. It orchestrates two existing, maintained ones — [google-analytics-mcp](https://github.com/googleanalytics/google-analytics-mcp) (official, Google) and [mcp-search-console](https://github.com/AminForou/mcp-gsc) (AminForou, MIT) — and adds the operational knowledge that makes them work smoothly across many sites: guided credential setup, audit workflows, sitemap health checks, and IndexNow submission with real end-to-end verification.
