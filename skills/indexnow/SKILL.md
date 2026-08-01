@@ -9,7 +9,7 @@ Notify IndexNow-participating engines (Bing, Yandex, Seznam, Naver) when URLs ar
 
 ## Bundled script
 
-`${CLAUDE_PLUGIN_ROOT}/skills/indexnow/scripts/indexnow.mjs` — zero dependencies, Node 18+. Commands:
+`scripts/indexnow.mjs`, located alongside this SKILL.md (resolve the path relative to this skill's own directory — it works whether the skill was installed as part of the plugin or standalone via `npx skills add`). Zero dependencies, Node 18+. Commands:
 
 - `node indexnow.mjs generar-clave` (or `generate-key`) — prints a fresh 32-char hex key.
 - `node indexnow.mjs --host example.com --key KEY https://example.com/page` — submit specific URLs.

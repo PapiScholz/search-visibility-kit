@@ -53,6 +53,14 @@ From the Claude Code / Cowork plugin marketplace flow:
 /plugin install search-visibility-kit@papischolz
 ```
 
+Using Cursor, Codex, Copilot or another agent? Install the skills via [skills.sh](https://skills.sh):
+
+```
+npx skills add PapiScholz/search-visibility-kit
+```
+
+Then configure the two MCP servers manually — see [SETUP.md](SETUP.md), section 4.
+
 ## Requirements
 
 - [uv](https://docs.astral.sh/uv/) installed (`uvx` runs both MCP servers, no Python management needed)
@@ -133,6 +141,14 @@ Quién usa esto en la práctica: freelancers que reportan a clientes con datos e
 /plugin marketplace add PapiScholz/search-visibility-kit
 /plugin install search-visibility-kit@papischolz
 ```
+
+¿Usás Cursor, Codex, Copilot u otro agente? Instalá las skills vía [skills.sh](https://skills.sh):
+
+```
+npx skills add PapiScholz/search-visibility-kit
+```
+
+Después configurá los dos servidores MCP a mano — ver [SETUP.md](SETUP.md), sección 4.
 
 ## Requisitos
 

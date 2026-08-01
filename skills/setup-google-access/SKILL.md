@@ -5,7 +5,7 @@ description: Guide the user through connecting Claude to Google Search Console a
 
 # Setup Google access
 
-Walk the user through a one-time setup that works for unlimited websites afterwards. The end state: a Google Cloud service account whose JSON key feeds two local MCP servers (`gsc` and `analytics`, declared in this plugin's `.mcp.json`).
+Walk the user through a one-time setup that works for unlimited websites afterwards. The end state: a Google Cloud service account whose JSON key feeds two local MCP servers (`gsc` and `analytics`, declared in this plugin's `.mcp.json`). If this skill was installed standalone (via `npx skills add`, without the plugin), the user must declare those servers manually in their client — give them the JSON block from section 4 of https://github.com/PapiScholz/search-visibility-kit/blob/main/SETUP.md.
 
 ## Prerequisites check
 

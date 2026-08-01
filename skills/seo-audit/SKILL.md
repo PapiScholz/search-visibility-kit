@@ -7,6 +7,8 @@ description: Run a data-driven SEO audit of a website using Google Search Consol
 
 Produce a prioritized, evidence-based audit. Every claim must come from actual tool output — never estimate or fill gaps with plausible numbers.
 
+If the `gsc` and `analytics` MCP tools are not available in this client (common when this skill was installed standalone, without the plugin's `.mcp.json`), do not attempt the audit with guesses: first walk the user through connecting the servers using the setup-google-access skill, or the manual client configuration in section 4 of https://github.com/PapiScholz/search-visibility-kit/blob/main/SETUP.md (works with any MCP client).
+
 ## Data collection
 
 Run these in order (parallelize where independent):
