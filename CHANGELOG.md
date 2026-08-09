@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-08-09
+
+### Fixed
+
+- `bump-registry-pin.mjs` asked `gh pr list --head` for `owner:branch`. That flag
+  wants the bare branch name; the qualified form matches nothing and still exits
+  successfully, which is indistinguishable from "no pull request exists". The
+  script concluded there was none, tried to open a duplicate, and failed after it
+  had already pushed. It now queries by branch name, filters by fork owner, and
+  falls back to the URL `gh pr create` reports when a pull request does exist.
+
 ## [0.3.0] - 2026-08-09
 
 First tagged release. Everything below already shipped to `main`: the plugin is
@@ -72,7 +83,8 @@ a version boundary to refer back to. This release creates that boundary.
   `indexnow`, `onboard-site` — plus two MCP servers (`gsc`, `analytics`) run via
   `uvx`, and a zero-dependency Node script for IndexNow submissions.
 
-[Unreleased]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/PapiScholz/search-visibility-kit/releases/tag/v0.1.0

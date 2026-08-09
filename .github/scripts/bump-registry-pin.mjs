@@ -169,22 +169,39 @@ run('git', ['commit', '-m', message], { cwd: work });
 run('git', ['push', '--force', 'origin', BRANCH], { cwd: work });
 
 step(7, 'Opening or updating the pull request');
+// `gh pr list --head` wants the bare branch name. Passing "owner:branch" matches
+// nothing and returns success, which reads exactly like "no PR exists" and sends
+// this straight into creating a duplicate.
 const open = run('gh', [
-  'pr', 'list', '--repo', REGISTRY, '--head', `${owner}:${BRANCH}`, '--state', 'open', '--json', 'url', '--jq', '.[].url',
+  'pr', 'list',
+  '--repo', REGISTRY,
+  '--head', BRANCH,
+  '--state', 'open',
+  '--json', 'url,headRepositoryOwner',
+  '--jq', `[.[] | select(.headRepositoryOwner.login == "${owner}")][0].url // empty`,
 ]);
 
 if (open) {
   console.log(`\nUpdated the existing pull request: ${open}`);
 } else {
-  const url = run('gh', [
-    'pr', 'create',
-    '--repo', REGISTRY,
-    '--base', 'main',
-    '--head', `${owner}:${BRANCH}`,
-    '--title', title,
-    '--body', message,
-  ]);
-  console.log(`\nOpened ${url}`);
+  let url;
+  try {
+    url = run('gh', [
+      'pr', 'create',
+      '--repo', REGISTRY,
+      '--base', 'main',
+      '--head', `${owner}:${BRANCH}`,
+      '--title', title,
+      '--body', message,
+    ]);
+    console.log(`\nOpened ${url}`);
+  } catch (err) {
+    // Belt and braces: if a PR already exists after all, gh says so and names it.
+    const said = String(err.stderr || err.stdout || '');
+    const found = /(https:\/\/github\.com\/\S+\/pull\/\d+)/.exec(said);
+    if (!found) throw err;
+    console.log(`\nA pull request already existed and now carries this push: ${found[1]}`);
+  }
 }
 
 console.log(`\nWatch it with: gh pr checks --repo ${REGISTRY} --watch`);
