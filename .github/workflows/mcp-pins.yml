@@ -1,0 +1,43 @@
+name: MCP pin smoke test
+
+# The plugin is distributed from HEAD and pins both MCP servers to exact versions,
+# so a pin that stops working breaks every new install silently — there is no build
+# step that would notice. This runs a real `initialize` handshake against each
+# pinned server every week.
+#
+# Red means the pin is broken (yanked release, server no longer starts).
+# A newer upstream release is reported as a notice, never as a failure: a check
+# that goes red for "something newer exists" stops being read within two weeks.
+
+on:
+  schedule:
+    # Mondays, 07:23 UTC. Off the hour: scheduled jobs on the hour are the most
+    # delayed by GitHub's queue.
+    - cron: '23 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    name: Pinned servers still start
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install uv
+        # Pinned to the v9.0.0 commit, not a moving tag — the same standard this
+        # repo applies to its own dependencies.
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+
+      - name: Handshake against every pinned server
+        # No credentials on purpose: `initialize` must succeed without them, and
+        # verifying that is part of the point.
+        run: node .github/scripts/mcp-smoke.mjs

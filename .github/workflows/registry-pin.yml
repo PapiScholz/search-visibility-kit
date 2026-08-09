@@ -1,0 +1,82 @@
+name: Registry pin watch
+
+# The ClaudeRegistry badge reads "verified @<sha>" and their watchdog flips it to
+# "outdated" the day after HEAD moves past the pin — and never flips it back on its
+# own. This notices the same drift from our side and keeps one issue open about it,
+# so the reminder lands in this repo instead of being discovered on the public page.
+#
+# Detection only. Bumping the pin means opening a PR on someone else's repository,
+# which is done deliberately and locally with .github/scripts/bump-registry-pin.mjs
+# — no cross-repo token is stored here.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  schedule:
+    - cron: '41 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    name: Compare HEAD against the published pin
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check the pin
+        id: check
+        run: |
+          set +e
+          node .github/scripts/registry-pin.mjs
+          code=$?
+          set -e
+          case "$code" in
+            0) echo "drift=false" >> "$GITHUB_OUTPUT" ;;
+            3) echo "drift=true"  >> "$GITHUB_OUTPUT" ;;
+            *) echo "Could not determine the registry pin state." >&2; exit 1 ;;
+          esac
+
+      - name: Open or update the reminder
+        if: steps.check.outputs.drift == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: Registry pin is outdated
+        run: |
+          existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+            --search "\"$TITLE\" in:title" --json number,title \
+            --jq "[.[] | select(.title == env.TITLE)][0].number // empty")"
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/pin-drift.md"
+            echo "Updated issue #$existing."
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" \
+              --title "$TITLE" --body-file "$RUNNER_TEMP/pin-drift.md"
+          fi
+
+      - name: Close the reminder once back in sync
+        if: steps.check.outputs.drift == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: Registry pin is outdated
+        run: |
+          existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+            --search "\"$TITLE\" in:title" --json number,title \
+            --jq "[.[] | select(.title == env.TITLE)][0].number // empty")"
+          if [ -n "$existing" ]; then
+            gh issue close "$existing" --repo "$GITHUB_REPOSITORY" \
+              --comment "The registry pin matches HEAD again."
+            echo "Closed issue #$existing."
+          else
+            echo "In sync, nothing to close."
+          fi

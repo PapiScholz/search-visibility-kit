@@ -1,0 +1,53 @@
+name: Release
+
+# Turns a pushed tag into a GitHub Release, with the matching CHANGELOG section as
+# the body. Uses the gh CLI and the built-in GITHUB_TOKEN rather than a third-party
+# action, keeping the release path free of external dependencies.
+#
+# Note for tags that predate this file: on a tag push GitHub runs the workflow as it
+# exists AT THE TAGGED COMMIT. Tags pointing at commits from before .github/ existed
+# will not trigger this — those releases are created manually.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Publish GitHub Release
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check the tag matches the declared version
+        run: |
+          declared="$(node -p "require('./.claude-plugin/plugin.json').version")"
+          tagged="${GITHUB_REF_NAME#v}"
+          if [ "$declared" != "$tagged" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match plugin.json version $declared." >&2
+            exit 1
+          fi
+          echo "Tag and plugin.json agree on $declared."
+
+      - name: Extract release notes
+        run: node .github/scripts/changelog-section.mjs "$GITHUB_REF_NAME" > "$RUNNER_TEMP/notes.md"
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file "$RUNNER_TEMP/notes.md" \
+            --verify-tag

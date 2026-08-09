@@ -1,0 +1,78 @@
+# Changelog
+
+All notable changes to this project are documented here.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.3.0] - 2026-08-09
+
+First tagged release. Everything below already shipped to `main`: the plugin is
+distributed from `HEAD`, so users received these changes as they landed, without
+a version boundary to refer back to. This release creates that boundary.
+
+> **Why there is no 0.2.1.** Commit `eef17bc` set `plugin.json` to `0.2.1`, but
+> this range contains `daa7547` — a new feature. Semantic Versioning requires a
+> minor bump for that, so the label was wrong, and no release was ever cut under
+> it. `0.3.0` supersedes it. The gap in numbering is deliberate.
+
+### Added
+
+- Standalone compatibility for skills.sh installs: plugin-agnostic script path,
+  MCP fallback guidance in `setup-google-access`, and `npx` install docs
+  (`daa7547`).
+- Bilingual `SETUP.md` — manual step-by-step for Search Console / GA4
+  credentials, non-Claude MCP clients, and Bing Webmaster Tools registration
+  (`1e9fa52`), including the Windows stale-environment gotcha: `setx` does not
+  update running processes, and editor-embedded terminals inherit the editor's
+  environment (`6837c97`).
+- Bilingual `PRIVACY.md` — no data collection, local-only credentials, direct
+  API flows (`6814086`).
+- README: "Who is this for" positioning with an honest non-audience (`4a58087`),
+  and a use-cases table mapping real prompts to outcomes (`f119018`).
+- Release infrastructure: this changelog, a release guard that keeps the version
+  and the changelog from drifting apart, tagged GitHub releases, a scheduled
+  smoke test of the pinned MCP servers, and drift detection against the
+  ClaudeRegistry commit pin.
+
+### Changed
+
+- Both MCP servers are pinned to exact versions — `mcp-search-console==0.3.3`
+  and `analytics-mcp==0.7.0` — so every install resolves the same server code
+  the plugin was tested against (`eef17bc`).
+
+### Fixed
+
+- Removed an XML-like placeholder from the `onboard-site` skill description,
+  which Cowork's stricter skill validator rejected (`64a75da`).
+
+### Removed
+
+- The `--with "mcp<2"` workaround, introduced during this cycle (`8deee99`) when
+  the July 2026 `mcp` Python SDK release removed `mcp.server.fastmcp` and renamed
+  `Tool.inputSchema`, crashing both upstream servers. It is no longer needed:
+  both packages now declare the `mcp<2` upper bound themselves (`eef17bc`).
+
+## [0.2.0] - 2026-07-28
+
+### Added
+
+- IndexNow delta submissions via a `--state` file: only URLs that have not been
+  submitted before are sent (`fb865a4`).
+- `.gitignore` for graphify knowledge-graph artifacts (`aaf97b8`) and Snyk
+  organization configuration (`c46fd78`).
+
+## [0.1.0] - 2026-07-28
+
+### Added
+
+- Initial release (`f4a9a7b`). Four skills — `setup-google-access`, `seo-audit`,
+  `indexnow`, `onboard-site` — plus two MCP servers (`gsc`, `analytics`) run via
+  `uvx`, and a zero-dependency Node script for IndexNow submissions.
+
+[Unreleased]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/PapiScholz/search-visibility-kit/releases/tag/v0.1.0

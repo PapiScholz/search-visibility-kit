@@ -1,0 +1,39 @@
+name: Release guard
+
+# Offline gate on every PR and every push to main. Keeps the declared version and
+# the changelog from drifting apart, and re-checks the manifest, skill frontmatter
+# and MCP pins that the ClaudeRegistry verification methodology also inspects — so
+# a problem surfaces here rather than on the plugin's public page.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: Manifest, skills and changelog
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # The version check reads plugin.json at the base commit.
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate
+        env:
+          BASE_SHA: >-
+            ${{ github.event_name == 'pull_request'
+                && github.event.pull_request.base.sha
+                || github.event.before }}
+        run: node .github/scripts/validate.mjs --base "$BASE_SHA"
