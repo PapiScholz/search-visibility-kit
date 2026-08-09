@@ -62,7 +62,7 @@ If your client does not support Claude plugins, declare the servers directly (sa
   "mcpServers": {
     "gsc": {
       "command": "uvx",
-      "args": ["--with", "mcp<2", "mcp-search-console"],
+      "args": ["--from", "mcp-search-console==0.3.3", "mcp-search-console"],
       "env": {
         "GSC_CREDENTIALS_PATH": "/absolute/path/to/key.json",
         "GSC_SKIP_OAUTH": "true"
@@ -70,7 +70,7 @@ If your client does not support Claude plugins, declare the servers directly (sa
     },
     "analytics": {
       "command": "uvx",
-      "args": ["--with", "mcp<2", "analytics-mcp"],
+      "args": ["--from", "analytics-mcp==0.7.0", "analytics-mcp"],
       "env": {
         "GOOGLE_APPLICATION_CREDENTIALS": "/absolute/path/to/key.json",
         "GOOGLE_PROJECT_ID": "your-project-id"

@@ -73,7 +73,7 @@ Then configure the two MCP servers manually — see [SETUP.md](SETUP.md), sectio
 
 No key? Two paths: run the `setup-google-access` skill and Claude walks you through creating one interactively (~10 minutes, free), or follow the manual step-by-step in [SETUP.md](SETUP.md) — which also covers non-Claude MCP clients (Cursor, etc.) and Bing Webmaster Tools registration.
 
-> **Note:** both MCP servers are currently pinned with `--with "mcp<2"` because the July 2026 release of the `mcp` Python SDK introduced breaking changes (removed `mcp.server.fastmcp`, renamed `Tool.inputSchema`) that crash both upstream servers. Remove the pin once upstream publishes compatible releases.
+> **Note:** both MCP servers are pinned to exact versions (`mcp-search-console==0.3.3`, `analytics-mcp==0.7.0`), so every install resolves the same code this plugin was tested against. The earlier `--with "mcp<2"` workaround — needed when the July 2026 `mcp` Python SDK release removed `mcp.server.fastmcp` and renamed `Tool.inputSchema`, crashing both servers — is no longer necessary: both packages now declare the `mcp<2` upper bound themselves. To move to newer servers, bump the versions in `.mcp.json` and `SETUP.md` together.
 
 ## Reusing across websites
 

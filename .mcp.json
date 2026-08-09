@@ -3,8 +3,8 @@
     "gsc": {
       "command": "uvx",
       "args": [
-        "--with",
-        "mcp<2",
+        "--from",
+        "mcp-search-console==0.3.3",
         "mcp-search-console"
       ],
       "env": {
@@ -15,8 +15,8 @@
     "analytics": {
       "command": "uvx",
       "args": [
-        "--with",
-        "mcp<2",
+        "--from",
+        "analytics-mcp==0.7.0",
         "analytics-mcp"
       ],
       "env": {
