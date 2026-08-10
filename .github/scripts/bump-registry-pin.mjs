@@ -33,7 +33,6 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const REGISTRY = 'ClaudeRegistry/marketplace';
-const BRANCH = 'pin-search-visibility-kit';
 const DRY_RUN = process.argv.includes('--dry-run');
 
 const die = (msg) => {
@@ -56,6 +55,10 @@ try {
 const plugin = JSON.parse(fs.readFileSync(path.join(ROOT, '.claude-plugin/plugin.json'), 'utf8'));
 const pluginId = plugin.name;
 const version = plugin.version;
+// registry-pin.mjs looks for the pull request on this same branch when it builds
+// the drift issue. Deriving it in both places from the plugin name keeps a rename
+// from quietly pointing them at different branches.
+const BRANCH = `pin-${pluginId}`;
 
 const originUrl = run('git', ['remote', 'get-url', 'origin'], { cwd: ROOT });
 const originMatch = /github\.com[/:]([\w.-]+)\/([\w.-]+?)(?:\.git)?$/.exec(originUrl);
@@ -177,12 +180,21 @@ const open = run('gh', [
   '--repo', REGISTRY,
   '--head', BRANCH,
   '--state', 'open',
-  '--json', 'url,headRepositoryOwner',
-  '--jq', `[.[] | select(.headRepositoryOwner.login == "${owner}")][0].url // empty`,
+  '--json', 'number,url,headRepositoryOwner',
+  '--jq',
+  `[.[] | select(.headRepositoryOwner.login == "${owner}")][0] // empty | [.number, .url] | @tsv`,
 ]);
 
 if (open) {
-  console.log(`\nUpdated the existing pull request: ${open}`);
+  const [number, url] = open.split('\t');
+  // The force-push above changes the diff underneath a PR that is already open,
+  // and nothing else refreshes what it says about itself. Left alone it keeps the
+  // sha and version it was created with: PR #14 merged titled "...at eef17bc,
+  // bump entry to 0.2.1" while its only commit pinned df395cd (0.3.1). The
+  // reviewer reads the title, so it has to be re-stated on every update.
+  run('gh', ['pr', 'edit', number, '--repo', REGISTRY, '--title', title, '--body', message]);
+  console.log(`\nUpdated the existing pull request: ${url}`);
+  console.log(`    title -> ${title}`);
 } else {
   let url;
   try {

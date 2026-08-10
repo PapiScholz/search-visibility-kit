@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The registry pin watchdog runs daily instead of weekly. It is the only thing
+  that closes the drift reminder, and the event it waits for — the registry
+  merging the pull request — happens in someone else's repository, at a time
+  nobody here picks, with no webhook pointing back. There is nothing to react
+  to, so the interval is the entire mechanism. At weekly it left issue #1
+  standing for six days after the work that resolved it had already been merged.
+- The drift issue now names the pull request when one is already open, instead
+  of repeating a command that has already been run. `registry-pin.mjs` asks the
+  registry for an open pull request on the pin branch and, finding one, says the
+  bump is waiting on their review. The lookup takes a token if the environment
+  has one and works without it; any failure there is swallowed, so drift
+  detection never depends on it. Both scripts now derive the branch name from
+  `plugin.json`, which is what lets them agree on which branch to look at.
+
+### Fixed
+
+- `bump-registry-pin.mjs` force-pushed the branch of a pull request that was
+  already open without restating what that pull request said about itself. The
+  title and body are written once, at creation, so an updated pull request kept
+  advertising the commit and version it was opened with: PR #14 on the registry
+  merged titled "Pin search-visibility-kit at eef17bc, bump entry to 0.2.1"
+  while its only commit pinned `df395cd` (0.3.1). A reviewer who reads the title
+  is reading the previous run. It now runs `gh pr edit --title --body` on every
+  update.
+
 ## [0.3.1] - 2026-08-09
 
 ### Fixed

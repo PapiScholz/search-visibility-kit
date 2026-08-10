@@ -14,7 +14,13 @@ on:
     tags:
       - 'v*.*.*'
   schedule:
-    - cron: '41 7 * * 1'
+    # Daily, not weekly. This is the only thing that closes the reminder: the pin
+    # comes back into sync when the registry merges the pull request, which happens
+    # in someone else's repository, at a time nobody here chooses and with no
+    # webhook pointing this way. There is nothing to react to, so the interval is
+    # the whole mechanism — and at weekly it left an issue standing for six days
+    # after the work was done (#1).
+    - cron: '41 7 * * *'
   workflow_dispatch:
 
 permissions:
@@ -36,6 +42,10 @@ jobs:
 
       - name: Check the pin
         id: check
+        env:
+          # Read-only, and only to raise the rate limit on the public lookup of an
+          # open pull request in the registry. The script works without it.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set +e
           node .github/scripts/registry-pin.mjs

@@ -7,9 +7,15 @@
  * script notices the same thing from our side, so the reminder lands here
  * instead of being discovered weeks later on the plugin page.
  *
- * Read-only and credential-free: it fetches two public files over HTTPS and
- * compares them with local state. Bumping the pin is a separate, deliberate act
- * performed locally by bump-registry-pin.mjs.
+ * Read-only: it fetches two public files over HTTPS and compares them with local
+ * state. Bumping the pin is a separate, deliberate act performed locally by
+ * bump-registry-pin.mjs.
+ *
+ * When it finds drift it also asks whether a pull request with the new pin is
+ * already open, so the issue can say "waiting on their review" instead of asking
+ * again for a command that has already been run. That call takes a token if one
+ * is in the environment and works without it; either way a failure there is
+ * swallowed and detection carries on.
  *
  * Exit codes: 0 in sync, 3 drift detected, 1 could not determine.
  */
@@ -37,6 +43,43 @@ const plugin = readJson('.claude-plugin/plugin.json');
 const pluginId = plugin.name;
 const localVersion = plugin.version;
 const localHead = git('rev-parse', 'HEAD');
+
+// Both scripts derive the pull request branch from the plugin name, so renaming
+// the plugin cannot leave them looking at two different branches.
+const BRANCH = `pin-${pluginId}`;
+const owner = (/github\.com\/([\w.-]+)\//.exec(plugin.repository ?? '') ?? [])[1] ?? null;
+
+/*
+ * Enrichment, never a gate. Any failure leaves this null and the issue falls back
+ * to the plain instructions: drift detection is the job, and it must not start
+ * depending on an authenticated call into a third party's repository.
+ *
+ * Worth knowing, because it is the exact inverse of the 0.3.1 bug: the REST API
+ * wants the qualified `owner:branch` form for this filter, while `gh pr list
+ * --head` wants the bare branch name and silently matches nothing if given the
+ * qualified one.
+ */
+async function findOpenPull() {
+  if (!owner) return null;
+  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${REGISTRY}/pulls?state=open&head=${owner}:${BRANCH}`,
+      {
+        signal: AbortSignal.timeout(30_000),
+        headers: {
+          accept: 'application/vnd.github+json',
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
+        },
+      }
+    );
+    if (!res.ok) return null;
+    const [pr] = await res.json();
+    return pr ? { url: pr.html_url, number: pr.number, opened: pr.created_at.slice(0, 10) } : null;
+  } catch {
+    return null;
+  }
+}
 
 let pins;
 let registryMarketplace;
@@ -68,6 +111,20 @@ console.log(`local version    ${localVersion}`);
 console.log(`registry version ${registryVersion ?? '(absent)'}`);
 console.log('');
 
+// Only asked when it can change what the issue should say.
+const pull = drift ? await findOpenPull() : null;
+
+const nextStep = pull
+  ? [
+      `A pull request carrying the new pin is already open: ${pull.url} (#${pull.number}, opened ${pull.opened}).`,
+      '',
+      'Nothing to do from here until the registry reviews and merges it. This issue closes',
+      'itself on the first run after that, and the watchdog runs daily.',
+      '',
+      'Only if HEAD has moved again since it was opened, force-update it with:',
+    ]
+  : ['Bump it with:'];
+
 const body = [
   `The ClaudeRegistry pin for \`${pluginId}\` no longer matches this repository.`,
   '',
@@ -79,7 +136,7 @@ const body = [
   `While these differ the badge reads **outdated**. Their watchdog runs daily and never`,
   'flips a plugin back to verified on its own: that needs a new pin, reviewed and merged.',
   '',
-  'Bump it with:',
+  ...nextStep,
   '',
   '```',
   'node .github/scripts/bump-registry-pin.mjs',
