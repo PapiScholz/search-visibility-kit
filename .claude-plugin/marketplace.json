@@ -9,6 +9,16 @@
       "name": "search-visibility-kit",
       "source": "./",
       "description": "Google Search Console + GA4 + IndexNow for any website: guided setup, SEO audits, indexing workflows."
+    },
+    {
+      "name": "sdlc-assist",
+      "source": {
+        "source": "git-subdir",
+        "url": "PapiScholz/SDLC-Assist",
+        "path": "plugins/sdlc-assist"
+      },
+      "description": "SDLC router: tells the agent where work on a code repository stands (four steps, per stage) and what comes next, with a hook that adds that line on each prompt."
     }
-  ]
+  ],
+  "description": "Plugins by Ezequiel Scholz: sdlc-assist (SDLC router with the spec-driven-development family) and search-visibility-kit (Search Console, GA4, IndexNow)."
 }

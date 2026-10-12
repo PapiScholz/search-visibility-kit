@@ -55,6 +55,8 @@ From the Claude Code / Cowork plugin marketplace flow:
 /plugin install search-visibility-kit@papischolz
 ```
 
+The `papischolz` marketplace is one catalog with both of the author's plugins, `search-visibility-kit` and [`sdlc-assist`](https://github.com/PapiScholz/SDLC-Assist), and both repositories publish it. Add either repository once; the other plugin installs from the same catalog (`/plugin install sdlc-assist@papischolz`).
+
 Using Cursor, Codex, Copilot or another agent? Install the skills via [skills.sh](https://skills.sh):
 
 ```
