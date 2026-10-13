@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 /*
- * Drift detection against the ClaudeRegistry commit pin.
+ * Drift detection against the registry's commit pin (sigistry/marketplace,
+ * formerly ClaudeRegistry/marketplace).
  *
  * The registry badge reads "verified @<sha>" and a daily watchdog on their side
  * flips it to "outdated" the moment this repo's HEAD moves past the pin. This
  * script notices the same thing from our side, so the reminder lands here
  * instead of being discovered weeks later on the plugin page.
  *
- * Read-only: it fetches two public files over HTTPS and compares them with local
+ * Read-only: it fetches the registry's marketplace.json over HTTPS and compares
+ * our entry's git-subdir `source.sha` (the pin, since the registry dropped
+ * external-pins.json on 2026-09-03) and `version` with local
  * state. Bumping the pin is a separate, deliberate act performed locally by
  * bump-registry-pin.mjs.
  *
@@ -27,7 +30,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
-const REGISTRY = 'ClaudeRegistry/marketplace';
+const REGISTRY = 'sigistry/marketplace';
 const RAW = `https://raw.githubusercontent.com/${REGISTRY}/main/.claude-plugin`;
 
 const readJson = (rel) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8').replace(/\r\n/g, '\n'));
@@ -81,21 +84,16 @@ async function findOpenPull() {
   }
 }
 
-let pins;
 let registryMarketplace;
 try {
-  [pins, registryMarketplace] = await Promise.all([
-    fetchJson(`${RAW}/external-pins.json`),
-    fetchJson(`${RAW}/marketplace.json`),
-  ]);
+  registryMarketplace = await fetchJson(`${RAW}/marketplace.json`);
 } catch (err) {
   console.error(`Could not read the registry: ${err.message}`);
   process.exit(1);
 }
 
-const pin = pins?.plugins?.[pluginId] ?? null;
 const entry = (registryMarketplace?.plugins ?? []).find((p) => p.name === pluginId) ?? null;
-const pinnedCommit = pin?.commit ?? null;
+const pinnedCommit = typeof entry?.source === 'object' ? entry.source.sha ?? null : null;
 const registryVersion = entry?.version ?? null;
 
 const commitDrift = pinnedCommit !== localHead;
@@ -126,7 +124,7 @@ const nextStep = pull
   : ['Bump it with:'];
 
 const body = [
-  `The ClaudeRegistry pin for \`${pluginId}\` no longer matches this repository.`,
+  `The registry pin for \`${pluginId}\` no longer matches this repository.`,
   '',
   '| | registry | this repo |',
   '| --- | --- | --- |',

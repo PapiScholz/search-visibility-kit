@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The registry pin watchdog had failed every day since 2026-10-06 with HTTP 404
+  on `external-pins.json`. The registry moved from `ClaudeRegistry/marketplace`
+  to `sigistry/marketplace` and, on 2026-09-03, dropped that file: the pin now
+  lives in our `marketplace.json` entry as the git-subdir `source.sha`.
+  `registry-pin.mjs` reads it from there, and `bump-registry-pin.mjs` writes the
+  new commit into that same field next to `version`. Checked against the
+  registry's own `verify-plugins.mjs --ci` on a throwaway clone before landing.
+
 ## [0.3.2] - 2026-10-13
 
 ### Changed

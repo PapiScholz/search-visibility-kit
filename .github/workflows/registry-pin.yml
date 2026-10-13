@@ -1,6 +1,6 @@
 name: Registry pin watch
 
-# The ClaudeRegistry badge reads "verified @<sha>" and their watchdog flips it to
+# The registry (sigistry/marketplace) badge reads "verified @<sha>" and their watchdog flips it to
 # "outdated" the day after HEAD moves past the pin — and never flips it back on its
 # own. This notices the same drift from our side and keeps one issue open about it,
 # so the reminder lands in this repo instead of being discovered on the public page.

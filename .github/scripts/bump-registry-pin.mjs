@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /*
- * Bump the ClaudeRegistry commit pin for this plugin, and open or update the PR.
+ * Bump the registry's commit pin for this plugin (sigistry/marketplace, formerly
+ * ClaudeRegistry/marketplace), and open or update the PR.
  *
  * Runs LOCALLY, on your machine, using the `gh` login you already have. It is
  * deliberately not a CI job: the GITHUB_TOKEN of a workflow is scoped to the
@@ -13,8 +14,9 @@
  * What it does, which is what was previously done by hand:
  *   1. refuses to run unless local HEAD is already pushed
  *   2. syncs your marketplace fork with upstream
- *   3. pins the commit in external-pins.json, inside the "plugins" object
- *   4. matches the version in marketplace.json to plugin.json
+ *   3. pins the commit in our marketplace.json entry's git-subdir `source.sha`
+ *      (the registry's single source of truth for pins since 2026-09-03)
+ *   4. matches the version in that same entry to plugin.json
  *   5. regenerates verified.json with the registry's own verifier
  *   6. commits, pushes, and opens or updates the pull request
  *
@@ -32,7 +34,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const REGISTRY = 'ClaudeRegistry/marketplace';
+const REGISTRY = 'sigistry/marketplace';
 const DRY_RUN = process.argv.includes('--dry-run');
 
 const die = (msg) => {
@@ -98,21 +100,19 @@ run('git', ['clone', '--depth', '1', `https://github.com/${fork}.git`, work]);
 run('git', ['checkout', '-B', BRANCH], { cwd: work });
 
 // ------------------------------------------------------------------- the edit
-const pinsPath = path.join(work, '.claude-plugin', 'external-pins.json');
 const marketPath = path.join(work, '.claude-plugin', 'marketplace.json');
 
 step(3, 'Pinning the commit and matching the version');
 
-const pins = JSON.parse(fs.readFileSync(pinsPath, 'utf8'));
-pins.plugins = pins.plugins ?? {};
-pins.plugins[pluginId] = { repo: sourceRepo, commit: localHead, path: '.' };
-fs.writeFileSync(pinsPath, JSON.stringify(pins, null, 2) + '\n');
-
 const market = JSON.parse(fs.readFileSync(marketPath, 'utf8'));
 const entry = (market.plugins ?? []).find((p) => p.name === pluginId);
 if (!entry) die(`${pluginId} is not listed in the registry's marketplace.json. Submit it first.`);
+if (typeof entry.source !== 'object' || entry.source.source !== 'git-subdir') {
+  die(`${pluginId}'s registry entry has no git-subdir source to pin. Its shape changed; check it by hand.`);
+}
 const previousVersion = entry.version;
 entry.version = version;
+entry.source.sha = localHead;
 fs.writeFileSync(marketPath, JSON.stringify(market, null, 2) + '\n');
 
 console.log(`    commit  -> ${localHead.slice(0, 7)}`);
@@ -158,8 +158,7 @@ const title = `Bump ${pluginId} pin to ${localHead.slice(0, 7)} (${version})`;
 const message = [
   title,
   '',
-  `- external-pins.json: pin ${sourceRepo} at ${localHead}`,
-  `- marketplace.json: ${previousVersion} -> ${version}, matching plugin.json at that commit`,
+  `- marketplace.json: pin ${sourceRepo} at ${localHead} (source.sha), ${previousVersion} -> ${version} matching plugin.json at that commit`,
   '- verified.json: regenerated with scripts/verify-plugins.mjs',
   '',
   'Verified before opening: node scripts/verify-plugins.mjs --ci exits 0.',
