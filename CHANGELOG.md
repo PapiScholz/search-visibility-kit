@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-10-13
+
 ### Changed
 
+- The `papischolz` marketplace file is now one catalog that lists both
+  `search-visibility-kit` and `sdlc-assist` (`ed48a6c`). The plugin itself is
+  unchanged by it.
 - The registry pin watchdog runs daily instead of weekly. It is the only thing
   that closes the drift reminder, and the event it waits for — the registry
   merging the pull request — happens in someone else's repository, at a time
@@ -110,7 +115,8 @@ a version boundary to refer back to. This release creates that boundary.
   `indexnow`, `onboard-site` — plus two MCP servers (`gsc`, `analytics`) run via
   `uvx`, and a zero-dependency Node script for IndexNow submissions.
 
-[Unreleased]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/PapiScholz/search-visibility-kit/compare/v0.1.0...v0.2.0
