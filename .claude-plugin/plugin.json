@@ -1,6 +1,6 @@
 {
   "name": "search-visibility-kit",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Connect Claude to Google Search Console, Google Analytics 4 and IndexNow for any website. Guided credential setup, data-driven SEO audits, sitemap health checks, and IndexNow submission with real verification.",
   "author": {
     "name": "Ezequiel Scholz",

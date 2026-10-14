@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1B2A4A"/>
+      <stop offset="1" stop-color="#0F1A30"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#C9822E"/>
+      <stop offset="1" stop-color="#F2A541"/>
+    </linearGradient>
+    <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F2A541" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#F2A541" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" rx="200" fill="url(#bg)"/>
+
+  <!-- dashboard card -->
+  <rect x="172" y="196" width="680" height="632" rx="56" fill="#22345A" stroke="#E9E4DA" stroke-width="26"/>
+
+  <!-- KPI tiles -->
+  <rect x="236" y="262" width="168" height="74" rx="20" fill="url(#amber)"/>
+  <rect x="428" y="262" width="168" height="74" rx="20" fill="#E9E4DA" opacity="0.85"/>
+  <rect x="620" y="262" width="168" height="74" rx="20" fill="#E9E4DA" opacity="0.45"/>
+
+  <!-- traffic line rising, with its area -->
+  <path d="M236 600 L340 552 L436 574 L540 488 L640 506 L760 400 L760 640 L236 640 Z" fill="url(#area)"/>
+  <path d="M236 600 L340 552 L436 574 L540 488 L640 506 L760 400" fill="none" stroke="#F2A541" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="760" cy="400" r="26" fill="#F2A541" stroke="#22345A" stroke-width="10"/>
+
+  <!-- baseline + bars -->
+  <rect x="236" y="660" width="552" height="8" rx="4" fill="#E9E4DA" opacity="0.35"/>
+  <rect x="252" y="720" width="56" height="52" rx="10" fill="#E9E4DA"/>
+  <rect x="340" y="700" width="56" height="72" rx="10" fill="#E9E4DA"/>
+  <rect x="428" y="708" width="56" height="64" rx="10" fill="#E9E4DA"/>
+  <rect x="516" y="688" width="56" height="84" rx="10" fill="#E9E4DA"/>
+  <rect x="604" y="696" width="56" height="76" rx="10" fill="#E9E4DA"/>
+  <rect x="692" y="680" width="56" height="92" rx="10" fill="url(#amber)"/>
+</svg>

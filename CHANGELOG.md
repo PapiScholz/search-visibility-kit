@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-10-13
+
+### Added
+
+- Listing icon: `.claude-plugin/icon.svg` and a 512 px `icon.png` (a metrics
+  dashboard, in the same navy, cream and amber as the author's other plugins).
+
 ### Fixed
 
 - The registry pin watchdog had failed every day since 2026-10-06 with HTTP 404
