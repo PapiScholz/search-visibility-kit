@@ -30,9 +30,9 @@ Everything below is a real prompt you can type once the kit is connected — no 
 | *"Which queries almost rank? Where's my easiest growth?"* | Surfaces position 5–20 queries with impressions but few clicks — the pages where a title rewrite or content update pays fastest. |
 | *"Is this new page indexed yet?"* | Inspects the URL: crawl date, index status, rich results detected. Batch-checks up to 10 URLs at once. |
 | *"Submit my sitemap to Google"* | Submits or resubmits it through Search Console and reports the processing status. |
-| *"Notify search engines about my new URLs"* | Runs the bundled IndexNow script (Bing, Yandex, Seznam, Naver) with delta tracking — only URLs not already submitted — and verifies the key file is actually reachable first. |
+| *"Notify search engines about my new URLs"* | Submits to IndexNow (Bing, Yandex, Seznam, Naver) with delta tracking — only URLs not already submitted — and verifies the key file is actually reachable first. |
 | *"How many people are on my site right now?"* | GA4 realtime report: active users in the last 30 minutes. |
-| *"Set up Google access"* | Interactive wizard: Google Cloud project, service account, per-site permissions, environment variables, verification. Once, ~10 minutes. |
+| *"Set up Google access"* | Interactive wizard: Google Cloud project, service account, per-site permissions, plugin settings, verification. Once, ~10 minutes. |
 | *"Onboard clientsite.com"* | Full checklist for a new site: Search Console access, GA4 access, sitemap submission, IndexNow key, Bing Webmaster Tools import, baseline audit. Two clicks of Google UI per site, zero plugin reconfiguration. |
 
 Who runs these in practice: freelancers reporting to clients with data instead of vibes, indie hackers checking their launch actually got indexed, agencies onboarding site #12 in the time site #1 took, and anyone who suspects — correctly — that nobody has opened their Search Console in months.
@@ -41,9 +41,9 @@ Who runs these in practice: freelancers reporting to clients with data instead o
 
 | Skill | What it does |
 |---|---|
-| `setup-google-access` | One-time guided setup: Google Cloud project, service account, per-site access grants, environment variables, troubleshooting. |
+| `setup-google-access` | One-time guided setup: Google Cloud project, service account, per-site access grants, plugin settings, troubleshooting. |
 | `seo-audit` | Data-driven audit: branded vs non-branded queries, CTR opportunities, sitemap staleness detection, index coverage, GA4 channel mix and hygiene. |
-| `indexnow` | Bundled zero-dependency Node script (key generation, sitemap submission) plus a verification playbook for the failure modes that bite in production: CDN-cached 404s, WAF user-agent blocking, SPA fallback routing. |
+| `indexnow` | Key generation and sitemap submission with a key-file pre-check, plus a verification playbook for the failure modes that bite in production: CDN-cached 404s, WAF user-agent blocking, SPA fallback routing. |
 | `onboard-site` | Repeatable checklist to bring any new website into the full stack in minutes. |
 
 ## Install
@@ -68,10 +68,7 @@ Then configure the two MCP servers manually — see [SETUP.md](SETUP.md), sectio
 ## Requirements
 
 - [uv](https://docs.astral.sh/uv/) installed (`uvx` runs both MCP servers, no Python management needed)
-- Node 18+ (only for the IndexNow script)
-- Two environment variables:
-  - `GOOGLE_SA_KEY_PATH` — absolute path to your service account JSON key
-  - `GOOGLE_CLOUD_PROJECT_ID` — your Google Cloud project ID
+- A Google Cloud service account JSON key and its project ID. The plugin asks for both when you enable it (the key file goes to your system's secure credential store). Upgrading from 0.3.x: the `GOOGLE_SA_KEY_PATH` and `GOOGLE_CLOUD_PROJECT_ID` environment variables are no longer read; enter the same values in the prompt.
 
 No key? Two paths: run the `setup-google-access` skill and Claude walks you through creating one interactively (~10 minutes, free), or follow the manual step-by-step in [SETUP.md](SETUP.md) — which also covers non-Claude MCP clients (Cursor, etc.) and Bing Webmaster Tools registration.
 
@@ -123,9 +120,9 @@ Todo lo de abajo es un prompt real que podés escribir una vez conectado el kit 
 | *"¿Qué queries casi rankean? ¿Dónde está mi crecimiento más fácil?"* | Muestra queries en posición 5–20 con impresiones y pocos clics — las páginas donde un título nuevo o una actualización de contenido paga más rápido. |
 | *"¿Esta página nueva ya está indexada?"* | Inspecciona la URL: fecha de crawl, estado de índice, rich results. Hasta 10 URLs por lote. |
 | *"Enviá mi sitemap a Google"* | Lo envía o reenvía por Search Console y reporta el estado de procesamiento. |
-| *"Avisale a los buscadores de mis URLs nuevas"* | Corre el script de IndexNow incluido (Bing, Yandex, Seznam, Naver) con tracking de deltas — solo URLs no enviadas antes — verificando primero que el archivo de clave sea accesible. |
+| *"Avisale a los buscadores de mis URLs nuevas"* | Envía a IndexNow (Bing, Yandex, Seznam, Naver) con tracking de deltas — solo URLs no enviadas antes — verificando primero que el archivo de clave sea accesible. |
 | *"¿Cuánta gente hay en mi sitio ahora mismo?"* | Reporte realtime de GA4: usuarios activos en los últimos 30 minutos. |
-| *"Configurame el acceso a Google"* | Asistente interactivo: proyecto de Google Cloud, service account, permisos por sitio, variables de entorno, verificación. Una vez, ~10 minutos. |
+| *"Configurame el acceso a Google"* | Asistente interactivo: proyecto de Google Cloud, service account, permisos por sitio, configuración del plugin, verificación. Una vez, ~10 minutos. |
 | *"Sumá el sitio cliente.com"* | Checklist completo para un sitio nuevo: acceso a Search Console y GA4, sitemap, clave de IndexNow, importación a Bing Webmaster Tools, auditoría base. Dos clicks de UI de Google por sitio, cero reconfiguración del plugin. |
 
 Quién usa esto en la práctica: freelancers que reportan a clientes con datos en vez de sensaciones, indie hackers verificando que su lanzamiento se indexó, agencias sumando el sitio n.° 12 en el tiempo que llevó el n.° 1, y cualquiera que sospeche — con razón — que nadie abre su Search Console hace meses.
@@ -134,9 +131,9 @@ Quién usa esto en la práctica: freelancers que reportan a clientes con datos e
 
 | Skill | Qué hace |
 |---|---|
-| `setup-google-access` | Setup guiado por única vez: proyecto de Google Cloud, service account, permisos por sitio, variables de entorno, solución de problemas. |
+| `setup-google-access` | Setup guiado por única vez: proyecto de Google Cloud, service account, permisos por sitio, configuración del plugin, solución de problemas. |
 | `seo-audit` | Auditoría basada en datos: queries de marca vs no-marca, oportunidades de CTR, detección de sitemaps desactualizados, cobertura de indexación, mix de canales e higiene de GA4. |
-| `indexnow` | Script Node sin dependencias (generación de clave, envío por sitemap) más un playbook de verificación para los problemas reales de producción: 404 cacheados en el CDN, bloqueo por user-agent en el WAF, fallback de SPA. |
+| `indexnow` | Generación de clave y envío por sitemap con chequeo previo del archivo de clave, más un playbook de verificación para los problemas reales de producción: 404 cacheados en el CDN, bloqueo por user-agent en el WAF, fallback de SPA. |
 | `onboard-site` | Checklist repetible para sumar cualquier sitio nuevo al stack completo en minutos. |
 
 ## Instalación
@@ -157,8 +154,7 @@ Después configurá los dos servidores MCP a mano — ver [SETUP.md](SETUP.md), 
 ## Requisitos
 
 - [uv](https://docs.astral.sh/uv/) instalado (`uvx` ejecuta ambos servidores MCP)
-- Node 18+ (solo para el script de IndexNow)
-- Dos variables de entorno: `GOOGLE_SA_KEY_PATH` (ruta absoluta al JSON de la service account) y `GOOGLE_CLOUD_PROJECT_ID` (ID del proyecto de Google Cloud)
+- El JSON de una service account de Google Cloud y el ID de su proyecto. El plugin pide los dos al habilitarlo (el archivo de clave va al almacén seguro de credenciales del sistema). Si venís de 0.3.x: ya no se leen las variables `GOOGLE_SA_KEY_PATH` y `GOOGLE_CLOUD_PROJECT_ID`; cargá los mismos valores en el diálogo.
 
 ¿No tenés clave? Dos caminos: ejecutá la skill `setup-google-access` y Claude te guía de forma interactiva (~10 minutos, gratis), o seguí el paso a paso manual de [SETUP.md](SETUP.md) — que además cubre clientes MCP sin Claude (Cursor, etc.) y el alta en Bing Webmaster Tools.
 

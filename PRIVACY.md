@@ -6,10 +6,10 @@ _Last updated: 2026-07-28_
 
 ## How your data flows
 
-- **Credentials** (your Google Cloud service account JSON key) live only on your machine, at a path you choose, referenced through local environment variables (`GOOGLE_SA_KEY_PATH`, `GOOGLE_CLOUD_PROJECT_ID`). This plugin never reads, copies, uploads, or logs them.
+- **Credentials** (your Google Cloud service account JSON key) live only on your machine, at a path you choose. You enter that path and your project ID in the plugin's settings when you enable it; Claude Code keeps the path in your system's secure credential store and passes it to the two local MCP servers. This plugin never reads, copies, uploads, or logs the key itself.
 - **Search Console and Google Analytics data** flows directly between your machine and Google's APIs, using MCP servers that run locally as child processes (the official [google-analytics-mcp](https://github.com/googleanalytics/google-analytics-mcp) and the community [mcp-search-console](https://github.com/AminForou/mcp-gsc)). No intermediary service is involved.
-- **IndexNow submissions** are sent by the bundled script directly from your machine to `api.indexnow.org`. The submitted URLs and your IndexNow key (public by design) are the only data transmitted, and only when you run the script.
-- The optional `--state` file for IndexNow delta submissions is a local JSON file on your machine containing only the URLs you already submitted.
+- **IndexNow submissions** are sent directly from your machine to `api.indexnow.org`, only when you ask for one. The submitted URLs and your IndexNow key (public by design) are the only data transmitted.
+- The optional state file for IndexNow delta submissions is a local JSON file on your machine containing only the URLs you already submitted.
 
 ## Third parties you do interact with
 

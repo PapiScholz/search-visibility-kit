@@ -1,6 +1,6 @@
 {
   "name": "search-visibility-kit",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Connect Claude to Google Search Console, Google Analytics 4 and IndexNow for any website. Guided credential setup, data-driven SEO audits, sitemap health checks, and IndexNow submission with real verification.",
   "author": {
     "name": "Ezequiel Scholz",
@@ -19,5 +19,19 @@
     "mcp",
     "aeo",
     "geo"
-  ]
+  ],
+  "icon": "./.claude-plugin/icon.png",
+  "userConfig": {
+    "google_sa_key_path": {
+      "type": "file",
+      "title": "Google service account key",
+      "description": "The JSON key file of the Google Cloud service account that has read access to your Search Console and GA4 properties. Run the setup-google-access skill if you do not have one yet.",
+      "sensitive": true
+    },
+    "google_cloud_project_id": {
+      "type": "string",
+      "title": "Google Cloud project ID",
+      "description": "The ID of the Google Cloud project that owns the service account (shown in the key file as project_id)."
+    }
+  }
 }

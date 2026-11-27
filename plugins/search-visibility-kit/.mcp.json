@@ -8,7 +8,7 @@
         "mcp-search-console"
       ],
       "env": {
-        "GSC_CREDENTIALS_PATH": "${GOOGLE_SA_KEY_PATH}",
+        "GSC_CREDENTIALS_PATH": "${user_config.google_sa_key_path}",
         "GSC_SKIP_OAUTH": "true"
       }
     },
@@ -20,8 +20,8 @@
         "analytics-mcp"
       ],
       "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_SA_KEY_PATH}",
-        "GOOGLE_PROJECT_ID": "${GOOGLE_CLOUD_PROJECT_ID}"
+        "GOOGLE_APPLICATION_CREDENTIALS": "${user_config.google_sa_key_path}",
+        "GOOGLE_PROJECT_ID": "${user_config.google_cloud_project_id}"
       }
     }
   }

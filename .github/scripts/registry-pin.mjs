@@ -42,7 +42,7 @@ async function fetchJson(url) {
   return res.json();
 }
 
-const plugin = readJson('.claude-plugin/plugin.json');
+const plugin = readJson('plugins/search-visibility-kit/.claude-plugin/plugin.json');
 const pluginId = plugin.name;
 const localVersion = plugin.version;
 const localHead = git('rev-parse', 'HEAD');

@@ -16,7 +16,9 @@
  *   2. syncs your marketplace fork with upstream
  *   3. pins the commit in our marketplace.json entry's git-subdir `source.sha`
  *      (the registry's single source of truth for pins since 2026-09-03)
- *   4. matches the version in that same entry to plugin.json
+ *   4. matches the version in that same entry to plugin.json, and its
+ *      `source.path` to the folder the plugin lives in (moved from the
+ *      repository root to plugins/search-visibility-kit in 0.4.0)
  *   5. regenerates verified.json with the registry's own verifier
  *   6. commits, pushes, and opens or updates the pull request
  *
@@ -54,7 +56,8 @@ try {
   die('gh is not authenticated. Run: gh auth login');
 }
 
-const plugin = JSON.parse(fs.readFileSync(path.join(ROOT, '.claude-plugin/plugin.json'), 'utf8'));
+const PLUGIN_DIR = 'plugins/search-visibility-kit';
+const plugin = JSON.parse(fs.readFileSync(path.join(ROOT, PLUGIN_DIR, '.claude-plugin/plugin.json'), 'utf8'));
 const pluginId = plugin.name;
 const version = plugin.version;
 // registry-pin.mjs looks for the pull request on this same branch when it builds
@@ -111,12 +114,15 @@ if (typeof entry.source !== 'object' || entry.source.source !== 'git-subdir') {
   die(`${pluginId}'s registry entry has no git-subdir source to pin. Its shape changed; check it by hand.`);
 }
 const previousVersion = entry.version;
+const previousPath = entry.source.path;
 entry.version = version;
 entry.source.sha = localHead;
+entry.source.path = PLUGIN_DIR;
 fs.writeFileSync(marketPath, JSON.stringify(market, null, 2) + '\n');
 
 console.log(`    commit  -> ${localHead.slice(0, 7)}`);
 console.log(`    version ${previousVersion} -> ${version}`);
+if (previousPath !== PLUGIN_DIR) console.log(`    path    ${previousPath ?? '(none)'} -> ${PLUGIN_DIR}`);
 
 // --------------------------------------------------------- regenerate + verify
 step(4, "Regenerating verified.json with the registry's own verifier");

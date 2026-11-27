@@ -12,7 +12,7 @@ Walk the user through a one-time setup that works for unlimited websites afterwa
 Before anything, verify what already works:
 
 1. Try `list_properties` (gsc) and `get_account_summaries` (analytics). If both return data, setup is done — skip to verification.
-2. Check `uvx` is installed (`uvx --version`). If missing, have the user install uv: Windows `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`, macOS/Linux `curl -LsSf https://astral.sh/uv/install.sh | sh`. If the installer errors with "file in use", uv is already installed — do not reinstall.
+2. Check `uvx` is installed (`uvx --version`). If missing, the user installs uv themselves by following the official instructions at https://docs.astral.sh/uv/getting-started/installation/ (a package manager such as winget, Homebrew or pipx, or the standalone installer). Don't run an installer for them. If the installer errors with "file in use", uv is already installed — do not reinstall.
 
 ## One-time Google Cloud setup
 
@@ -31,14 +31,16 @@ For each website:
 - Search Console → property → Settings → Users and permissions → Add user → service account email → Full (or Restricted for read-only).
 - GA4 → Admin → Property access management → Add user → service account email → Viewer role. Recommend Viewer (least privilege); only suggest Editor if the user has a concrete write use case.
 
-## Environment variables
+## Plugin settings
 
-This plugin's `.mcp.json` expects two environment variables set in the user's shell/OS:
+The plugin asks for two values when it is enabled, and the MCP servers read them from there:
 
-- `GOOGLE_SA_KEY_PATH` — absolute path to the service account JSON key
-- `GOOGLE_CLOUD_PROJECT_ID` — the Google Cloud project ID
+- **Google service account key** — the JSON key file from step 4. Stored in the system's secure credential store, not in `settings.json`.
+- **Google Cloud project ID** — the project ID from step 1 (also the `project_id` field inside the key file).
 
-On Windows: `setx GOOGLE_SA_KEY_PATH "C:\path\to\key.json"` and `setx GOOGLE_CLOUD_PROJECT_ID "project-id"`, then fully restart the Claude app. On macOS/Linux, export them in the shell profile.
+The project ID also appears as a row in Claude Code's `/config` panel, where the user can change it; the key file is a sensitive option and does not. After changing either value, fully restart the Claude app so the MCP servers start with it. Versions up to 0.3.x read the environment variables `GOOGLE_SA_KEY_PATH` and `GOOGLE_CLOUD_PROJECT_ID` instead; those are no longer used by the plugin and can be removed once the settings are filled in.
+
+If this skill was installed standalone, without the plugin, there is no prompt: the user puts the key path and project ID into the `env` of the server block from section 4 of SETUP.md.
 
 ## Verification
 

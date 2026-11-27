@@ -31,7 +31,7 @@ jobs:
 
       - name: Check the tag matches the declared version
         run: |
-          declared="$(node -p "require('./.claude-plugin/plugin.json').version")"
+          declared="$(node -p "require('./plugins/search-visibility-kit/.claude-plugin/plugin.json').version")"
           tagged="${GITHUB_REF_NAME#v}"
           if [ "$declared" != "$tagged" ]; then
             echo "Tag $GITHUB_REF_NAME does not match plugin.json version $declared." >&2

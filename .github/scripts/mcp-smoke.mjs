@@ -36,9 +36,14 @@ const INITIALIZE = JSON.stringify({
   },
 });
 
-/** Expand ${VAR} against the environment; unset vars become empty strings. */
+/**
+ * Expand ${VAR} against the environment; unset vars become empty strings.
+ * ${user_config.KEY} has no value in CI (Claude Code fills it from the user's
+ * plugin settings), so it becomes empty too: `initialize` must work without it.
+ */
 const expand = (value) =>
-  String(value).replace(/\$\{([A-Za-z_][A-Za-z0-9_]*)\}/g, (_, name) => process.env[name] ?? '');
+  String(value).replace(/\$\{([A-Za-z_][\w.]*)\}/g, (_, name) =>
+    name.startsWith('user_config.') ? '' : process.env[name] ?? '');
 
 /** Pull "pkg==version" out of a `uvx --from pkg==version pkg` invocation. */
 function pinnedPackage(args) {
@@ -117,7 +122,7 @@ async function latestOnPypi(pkg) {
   }
 }
 
-const config = JSON.parse(fs.readFileSync(path.join(ROOT, '.mcp.json'), 'utf8').replace(/\r\n/g, '\n'));
+const config = JSON.parse(fs.readFileSync(path.join(ROOT, 'plugins/search-visibility-kit/.mcp.json'), 'utf8').replace(/\r\n/g, '\n'));
 const servers = Object.entries(config.mcpServers ?? {});
 
 if (!servers.length) {

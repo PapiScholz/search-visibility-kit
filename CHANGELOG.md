@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-27
+
+Anthropic's directory held 0.3.3: from organizations that aren't Verified it
+accepts no script files in a plugin, and it reads environment variables passed to
+MCP servers as credentials the plugin could forward.
+
+### Changed
+
+- **The key path and project ID are plugin settings now.** Claude Code asks for the
+  service account JSON key file and the Google Cloud project ID when the plugin is
+  enabled, keeps the key path in the system's secure credential store, and passes
+  both to the `gsc` and `analytics` servers through `${user_config.*}`. The
+  `GOOGLE_SA_KEY_PATH` and `GOOGLE_CLOUD_PROJECT_ID` environment variables are no
+  longer read: anyone upgrading enters the same two values once in the prompt.
+- **The plugin lives in `plugins/search-visibility-kit/`.** That folder holds only
+  what installs (manifest, icon, `.mcp.json`, skills, license); CI, docs and the
+  marketplace catalog stay at the repository root. The marketplace entry points at
+  the new folder, so `/plugin install search-visibility-kit@papischolz` is unchanged.
+- **IndexNow without a bundled script.** The `indexnow` skill describes the key,
+  the key-file pre-check, sitemap expansion, delta tracking and the POST to
+  `api.indexnow.org`, and Claude runs them with the user's own tools.
+  `skills/indexnow/scripts/indexnow.mjs` is gone, and Node is no longer a requirement.
+- `setup-google-access` links to uv's official install instructions instead of
+  quoting a download-and-run command.
+
+### Removed
+
+- `.claude-plugin/icon.svg`; the listing uses `icon.png`, now declared in
+  `plugin.json` as `icon`.
+
+### CI
+
+- `validate.mjs` reads the plugin from its folder, replaces the IndexNow syntax
+  check with `allowed-files` (only file types the directory accepts, none starting
+  with `#!`), and fails when an MCP server's `env` reads `${VAR}` from the
+  environment instead of `${user_config.*}`.
+- `bump-registry-pin.mjs` also sets the registry entry's `source.path` to the new
+  folder.
+
 ## [0.3.3] - 2026-10-13
 
 ### Added

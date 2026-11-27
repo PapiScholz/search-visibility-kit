@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "search-visibility-kit",
-      "source": "./",
+      "source": "./plugins/search-visibility-kit",
       "description": "Google Search Console + GA4 + IndexNow for any website: guided setup, SEO audits, indexing workflows."
     },
     {

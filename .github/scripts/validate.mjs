@@ -2,14 +2,23 @@
 /*
  * Offline validation gate for search-visibility-kit.
  *
- * Four checks, no network and no dependencies:
+ * Checks, no network and no dependencies:
  *   version-changelog  the version in plugin.json moved forward and CHANGELOG.md
  *                      documents it
  *   json-valid         every JSON manifest parses
  *   skill-frontmatter  each SKILL.md declares name/description, the name matches
  *                      its directory, and the description carries no XML-like
  *                      placeholder (Cowork's validator rejects those, see 64a75da)
- *   script-syntax      the bundled IndexNow script parses
+ *   allowed-files      the plugin folder ships only file types Anthropic's
+ *                      directory accepts from non-Verified organizations
+ *                      (Markdown, text, JSON, YAML, PNG/JPEG/GIF/WebP/ICO), and
+ *                      none starts with #!
+ *   mcp-pins           each MCP server is pinned to an exact version, and its env
+ *                      takes values only from userConfig, never from the user's
+ *                      environment (the directory refuses that as a credential read)
+ *
+ * The plugin lives in PLUGIN (below); the repository root holds CI and the
+ * marketplace catalog, which the directory submission does not include.
  *
  * Usage: node .github/scripts/validate.mjs [--base <sha>]
  * Without --base the version ordering check is skipped: there is nothing to
@@ -21,6 +30,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const PLUGIN = 'plugins/search-visibility-kit';
 
 // Every content comparison runs on normalised line endings: the repo is edited on
 // Windows and validated on a Linux runner, and a check whose result depends on the
@@ -52,7 +62,7 @@ const isGreater = (a, b) => {
 };
 
 // ----------------------------------------------------------------- json-valid
-const MANIFESTS = ['.claude-plugin/plugin.json', '.claude-plugin/marketplace.json', '.mcp.json'];
+const MANIFESTS = [PLUGIN + '/.claude-plugin/plugin.json', '.claude-plugin/marketplace.json', PLUGIN + '/.mcp.json'];
 let plugin = null;
 {
   const broken = [];
@@ -88,15 +98,20 @@ let plugin = null;
     // undefined = base commit exists but has no readable plugin.json there
     let previous = null;
     if (base) {
-      try {
-        const raw = execFileSync('git', ['show', base + ':.claude-plugin/plugin.json'], {
-          cwd: ROOT,
-          encoding: 'utf8',
-          stdio: ['ignore', 'pipe', 'pipe'],
-        });
-        previous = parseSemver(JSON.parse(raw).version);
-      } catch {
-        previous = undefined;
+      // Up to 0.3.3 the manifest sat at the repository root; read whichever exists at base.
+      previous = undefined;
+      for (const at of [PLUGIN + '/.claude-plugin/plugin.json', '.claude-plugin/plugin.json']) {
+        try {
+          const raw = execFileSync('git', ['show', base + ':' + at], {
+            cwd: ROOT,
+            encoding: 'utf8',
+            stdio: ['ignore', 'pipe', 'pipe'],
+          });
+          previous = parseSemver(JSON.parse(raw).version);
+          break;
+        } catch {
+          // not at this path in the base commit; try the next one
+        }
       }
     }
 
@@ -120,7 +135,7 @@ let plugin = null;
 
 // --------------------------------------------------------- skill-frontmatter
 {
-  const skillsDir = path.join(ROOT, 'skills');
+  const skillsDir = path.join(ROOT, PLUGIN, 'skills');
   const problems = [];
   let checked = 0;
 
@@ -128,10 +143,10 @@ let plugin = null;
     ? fs.readdirSync(skillsDir, { withFileTypes: true }).filter((d) => d.isDirectory())
     : [];
 
-  if (!dirs.length) problems.push('no skill directories found under skills/');
+  if (!dirs.length) problems.push('no skill directories found under ' + PLUGIN + '/skills/');
 
   for (const dir of dirs) {
-    const rel = 'skills/' + dir.name + '/SKILL.md';
+    const rel = PLUGIN + '/skills/' + dir.name + '/SKILL.md';
     if (!exists(rel)) {
       problems.push(rel + ': missing');
       continue;
@@ -169,20 +184,39 @@ let plugin = null;
   else pass('skill-frontmatter', checked + ' skill(s) have valid frontmatter');
 }
 
-// ------------------------------------------------------------- script-syntax
+// ------------------------------------------------------------- allowed-files
 {
-  const rel = 'skills/indexnow/scripts/indexnow.mjs';
-  if (!exists(rel)) {
-    fail('script-syntax', rel + ': missing');
-  } else {
-    try {
-      execFileSync(process.execPath, ['--check', path.join(ROOT, rel)], { stdio: ['ignore', 'pipe', 'pipe'] });
-      pass('script-syntax', rel + ' parses');
-    } catch (err) {
-      const first = String(err.stderr || err.message).trim().split('\n')[0];
-      fail('script-syntax', rel + ': ' + first);
+  // Anthropic's directory refuses, from non-Verified organizations, any file that
+  // isn't Markdown, text, JSON, YAML or a PNG/JPEG/GIF/WebP/ICO image, any file
+  // starting with #!, package-manager files, and CLAUDE.md/AGENTS.md. 0.3.3 was
+  // held because skills/indexnow/scripts/indexnow.mjs shipped inside the plugin.
+  const ALLOWED = /\.(md|txt|json|ya?ml|png|jpe?g|gif|webp|ico)$/i;
+  const BARE_OK = new Set(['LICENSE']);
+  const BANNED = /(^|\/)(CLAUDE|CLAUDE\.local|AGENTS)\.md$|(^|\/)(package(-lock)?\.json|pnpm-(lock|workspace)\.ya?ml|yarn\.lock|requirements\.txt|uv\.lock)$/i;
+  const problems = [];
+  let checked = 0;
+
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true })) {
+      const rel = dir + '/' + entry.name;
+      if (entry.isDirectory()) {
+        walk(rel);
+        continue;
+      }
+      checked++;
+      if (BANNED.test(rel)) problems.push(rel + ': not accepted by the directory');
+      else if (!ALLOWED.test(entry.name) && !BARE_OK.has(entry.name)) problems.push(rel + ': file type not accepted');
+      else if (fs.readFileSync(path.join(ROOT, rel)).subarray(0, 2).toString('latin1') === '#!') {
+        problems.push(rel + ': starts with #!');
+      }
     }
-  }
+  };
+
+  if (!exists(PLUGIN)) problems.push(PLUGIN + ': missing');
+  else walk(PLUGIN);
+
+  if (problems.length) fail('allowed-files', problems.join('; '));
+  else pass('allowed-files', checked + ' file(s) in ' + PLUGIN + ', all of accepted types');
 }
 
 // ------------------------------------------------------------------ mcp-pins
@@ -191,13 +225,22 @@ let plugin = null;
   // unpinned server in the PR gate beats catching it a week later in the
   // scheduled smoke test.
   try {
-    const config = JSON.parse(read('.mcp.json'));
+    const config = JSON.parse(read(PLUGIN + '/.mcp.json'));
     const servers = Object.entries(config.mcpServers ?? {});
     const problems = [];
 
     if (!servers.length) problems.push('.mcp.json declares no servers');
 
     for (const [name, spec] of servers) {
+      // Values reach the servers through userConfig only. A ${VAR} read from the
+      // user's environment is what the directory flags as a credential read.
+      for (const [key, value] of Object.entries(spec.env ?? {})) {
+        for (const [, ref] of String(value).matchAll(/\$\{([^}]+)\}/g)) {
+          if (!ref.startsWith('user_config.') && !ref.startsWith('CLAUDE_PLUGIN_')) {
+            problems.push(name + ': env ' + key + ' reads ${' + ref + '} from the environment; use ${user_config.<key>}');
+          }
+        }
+      }
       const args = spec.args ?? [];
       const i = args.indexOf('--from');
       if (i === -1 || i + 1 >= args.length) {
@@ -210,7 +253,7 @@ let plugin = null;
     }
 
     if (problems.length) fail('mcp-pins', problems.join('; '));
-    else pass('mcp-pins', servers.length + ' server(s) pinned to exact versions');
+    else pass('mcp-pins', servers.length + ' server(s) pinned to exact versions, env from userConfig only');
   } catch (err) {
     fail('mcp-pins', '.mcp.json unreadable: ' + err.message);
   }

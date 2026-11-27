@@ -26,32 +26,20 @@ Full walkthrough to connect any MCP client (Claude Code, Claude Desktop/Cowork, 
 
 - Admin → Property column → **Property access management** → "+" → Add users → paste the service account email → **Viewer** role (least privilege; use Editor only if you have a concrete write use case).
 
-## 3. Environment variables
+## 3. Plugin settings
 
-The plugin's `.mcp.json` reads two variables:
+When you enable the plugin, Claude Code asks for two values:
 
-| Variable | Value |
+| Setting | Value |
 |---|---|
-| `GOOGLE_SA_KEY_PATH` | Absolute path to the service account JSON key |
-| `GOOGLE_CLOUD_PROJECT_ID` | Your Google Cloud Project ID |
+| Google service account key | The JSON key file from step 1. Stored in your system's secure credential store |
+| Google Cloud project ID | Your Google Cloud Project ID (also `project_id` inside the key file) |
 
-Windows (then fully restart your MCP client):
+The project ID can be changed later in Claude Code's `/config` panel. After changing a value, fully restart your Claude client so the MCP servers start with it.
 
-```powershell
-setx GOOGLE_SA_KEY_PATH "C:\path\to\key.json"
-setx GOOGLE_CLOUD_PROJECT_ID "your-project-id"
-```
-
-macOS/Linux (add to `~/.zshrc` or `~/.bashrc`):
-
-```bash
-export GOOGLE_SA_KEY_PATH="/path/to/key.json"
-export GOOGLE_CLOUD_PROJECT_ID="your-project-id"
-```
+Upgrading from 0.3.x: the plugin no longer reads the `GOOGLE_SA_KEY_PATH` and `GOOGLE_CLOUD_PROJECT_ID` environment variables. Enter the same two values in the prompt, then you can remove the variables.
 
 Requirement: [uv](https://docs.astral.sh/uv/) installed — `uvx` runs both servers, no Python management needed.
-
-> **Windows gotcha — stale environments:** `setx` writes to the registry but never updates running processes. Terminals inside editors (VS Code, JetBrains) inherit the *editor's* environment — opening a "new" terminal there is not enough; the editor itself must be fully closed and reopened (or reboot). To verify before launching your MCP client, run `echo $env:GOOGLE_SA_KEY_PATH` in the same shell you will launch it from. Quick unblock without restarting anything: set the variables inline in the current shell (`$env:GOOGLE_SA_KEY_PATH = "C:\path\to\key.json"`) and launch the client from there.
 
 ## 4. Non-plugin clients (Cursor, plain MCP config)
 
@@ -115,11 +103,11 @@ Recorrido completo para conectar cualquier cliente MCP (Claude Code, Claude Desk
 
 **Google Analytics 4**: Administrar → columna Propiedad → **Administración de acceso a la propiedad** → "+" → Agregar usuarios → email de la service account → rol **Lector** (mínimo privilegio; Editor solo con un caso de uso concreto de escritura).
 
-## 3. Variables de entorno
+## 3. Configuración del plugin
 
-`GOOGLE_SA_KEY_PATH` (ruta absoluta al JSON) y `GOOGLE_CLOUD_PROJECT_ID` (ID del proyecto). En Windows: `setx` como en la sección en inglés y reiniciá el cliente por completo. En macOS/Linux: `export` en tu perfil de shell. Requisito: [uv](https://docs.astral.sh/uv/) instalado.
+Al habilitar el plugin, Claude Code pide dos valores: el **archivo JSON de la service account** (se guarda en el almacén seguro de credenciales del sistema) y el **ID del proyecto de Google Cloud** (también es `project_id` dentro del JSON). El ID del proyecto se puede cambiar después en el panel `/config` de Claude Code; después de cambiar un valor, reiniciá el cliente por completo.
 
-> **Trampa de Windows — entornos congelados:** `setx` escribe al registro pero nunca actualiza procesos vivos. Las terminales dentro de editores (VS Code, JetBrains) heredan el entorno *del editor* — abrir una terminal "nueva" ahí no alcanza; hay que cerrar el editor completo y reabrirlo (o reiniciar Windows). Verificá con `echo $env:GOOGLE_SA_KEY_PATH` en la misma shell desde la que vas a lanzar el cliente. Desbloqueo rápido sin cerrar nada: seteá las variables inline en la shell actual (`$env:GOOGLE_SA_KEY_PATH = "C:\ruta\a\key.json"`) y lanzá el cliente desde ahí.
+Si venís de 0.3.x: el plugin ya no lee las variables de entorno `GOOGLE_SA_KEY_PATH` y `GOOGLE_CLOUD_PROJECT_ID`. Cargá los mismos dos valores en el diálogo y después podés borrar las variables. Requisito: [uv](https://docs.astral.sh/uv/) instalado.
 
 ## 4. Clientes sin soporte de plugins
 
